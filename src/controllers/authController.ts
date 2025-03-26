@@ -40,4 +40,25 @@ const registerUser = async (req: Request<RegisterUserRequest>, res: Response) =>
     }
 }
 
+// user login 
 
+const loginUse = async (req: Request, res:Response) =>{
+    try{
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+        if(user && (await user.comparePassword(password))) {
+            res.json({
+                _id: user.id,
+                username: user.username,
+                email: user.email,
+                token: generateToken(user._id as string),
+            })
+        }
+        
+    } catch( error ) {
+        res.status(500).json({
+            message: (error as Error).message
+        });
+    }
+}
